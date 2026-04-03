@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Revenue Leak Auditor — Free AI Business Audit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f8fc;
+      --white: #ffffff;
+      --navy: #0f172a;
+      --navy2: #1e293b;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --blue-mid: #dbeafe;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --border: #e2e8f0;
+      --muted: #94a3b8;
+      --text: #1e293b;
+      --text2: #64748b;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 960px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 60px -10px rgba(0,0,0,0.12);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left {
+      background: var(--navy);
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(37,99,235,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .left::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -80px;
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--blue);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white;
+    }
+
+    .logo-text {
+      font-size: 0.9rem; font-weight: 700;
+      color: #fff; letter-spacing: -0.01em;
+    }
+
+    .left-content {
+      position: relative; z-index: 1;
+      flex: 1;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(37,99,235,0.2);
+      border: 1px solid rgba(37,99,235,0.4);
+      color: #93c5fd;
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 100px;
+      margin-bottom: 1.5rem; width: fit-content;
+    }
+
+    .tag::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #60a5fa;
+      animation: blink 2s ease infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .left h1 {
+      font-size: 1.9rem; font-weight: 800;
+      color: #fff; line-height: 1.2;
+      letter-spacing: -0.03em; margin-bottom: 1rem;
+    }
+
+    .left h1 em { font-style: normal; color: #60a5fa; }
+
+    .left p {
+      color: #94a3b8; font-size: 0.88rem;
+      line-height: 1.7; margin-bottom: 2.5rem;
+    }
+
+    .features { display: flex; flex-direction: column; gap: 1rem; }
+
+    .feature { display: flex; align-items: flex-start; gap: 12px; }
+
+    .feature-icon {
+      width: 32px; height: 32px;
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.3);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+      color: #60a5fa;
+    }
+
+    .feature-text strong {
+      display: block; color: #f1f5f9;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 2px;
+    }
+
+    .feature-text span { color: #64748b; font-size: 0.78rem; line-height: 1.5; }
+
+    .trust {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .trust svg { flex-shrink: 0; opacity: 0.8; }
+    .trust p { color: #64748b; font-size: 0.75rem; margin: 0; }
+    .trust p strong { color: #94a3b8; }
+
+    .right { padding: 3rem 2.5rem; display: flex; flex-direction: column; }
+
+    .right-header { margin-bottom: 2rem; }
+
+    .right-header h2 {
+      font-size: 1.35rem; font-weight: 800;
+      color: var(--navy); letter-spacing: -0.02em; margin-bottom: 0.35rem;
+    }
+
+    .right-header p { color: var(--text2); font-size: 0.85rem; }
+
+    .field { margin-bottom: 1.1rem; }
+
+    label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--navy2); letter-spacing: 0.01em; margin-bottom: 0.45rem;
+    }
+
+    label .req { color: var(--blue); font-size: 0.7rem; }
+    label .optional-badge {
+      background: var(--blue-mid);
+      color: var(--blue);
+      font-size: 0.65rem;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 20px;
+      margin-left: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem; font-weight: 500;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+    input::placeholder, textarea::placeholder { color: var(--muted); font-weight: 400; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    select.selected { color: var(--text); }
+    select option { color: var(--text); }
+
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1.25rem 0;
+      color: var(--muted); font-size: 0.75rem;
+    }
+
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    .submit-btn {
+      width: 100%; padding: 0.85rem;
+      background: var(--blue); color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      letter-spacing: -0.01em;
+      border: none; border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+
+    .submit-btn:hover {
+      background: #1d4ed8; transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+    }
+
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .fast-delivery {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .status.success {
+      background: var(--green-light);
+      border: 1.5px solid #bbf7d0;
+      color: var(--green);
+    }
+
+    .status.error {
+      background: var(--red-light);
+      border: 1.5px solid #fecaca;
+      color: var(--red);
+    }
+
+    .privacy {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-top: 1rem; color: var(--muted); font-size: 0.73rem;
+    }
+
+    @media (max-width: 700px) {
+      .page { grid-template-columns: 1fr; }
+      .left { padding: 2rem 1.5rem; }
+      .right { padding: 2rem 1.5rem; }
+      .left h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="left">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M3 13H8L10 8L14 16L16 11L21 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">RevenueAudit.ai</span>
+      </div>
+
+      <div class="left-content">
+        <div class="tag">Free AI Audit</div>
+        <h1>Find Where Your Business is <em>Leaking Money</em></h1>
+        <p>Our AI analyzes your business and pinpoints the exact areas costing you revenue — with clear, actionable fixes.</p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M16 16L21 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>3 Revenue Leaks Identified</strong>
+              <span>AI scans your business for common money-losing patterns</span>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4h16v12H4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M8 20h8M12 16v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>Instant Report by Email</strong>
+              <span>Detailed audit with severity scores sent within minutes</span>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <strong>Actionable Fix for Each Leak</strong>
+              <span>Not just problems — concrete steps to fix them</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="11" width="14" height="10" rx="2" stroke="#64748b" stroke-width="1.2"/>
+          <path d="M8 11V8C8 5.79 9.79 4 12 4C14.21 4 16 5.79 16 8V11" stroke="#64748b" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="12" cy="16" r="1.2" fill="#64748b"/>
+        </svg>
+        <p><strong>100% free</strong> · No credit card required · Private & secure</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="right-header">
+        <h2>Get Your Free Audit</h2>
+        <p>Takes less than 60 seconds to complete</p>
+      </div>
+
+      <form id="auditForm">
+        <div class="field">
+          <label>Business Type <span class="req">*</span></label>
+          <select id="business_type" required>
+            <option value="" disabled selected>Select your business type</option>
+            <option value="gym">Gym / Fitness Center</option>
+            <option value="crossfit">CrossFit Academy</option>
+            <option value="martial_arts">Martial Arts School</option>
+            <option value="ecommerce">E-Commerce Store</option>
+            <option value="restaurant">Restaurant / Café</option>
+            <option value="freelancer">Freelancer / Consultant</option>
+            <option value="agency">Marketing / Design Agency</option>
+            <option value="retail">Retail Shop</option>
+            <option value="saas">SaaS / Software</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Business Name <span class="req">*</span></label>
+          <input type="text" id="business_name" placeholder="e.g. CrossFit Berlin" required/>
+        </div>
+
+        <div class="field">
+          <label>Website <span style="color:var(--muted);font-weight:400;font-size:0.72rem;">(optional)</span></label>
+          <input type="text" id="website" placeholder="e.g. yourbusiness.com"/>
+        </div>
+
+        <div class="field">
+          <label>What's your biggest business problem? <span class="optional-badge">optional but helpful</span></label>
+          <textarea id="biggest_problem" placeholder="E.g., low customer retention, high ad costs, inconsistent cash flow..." rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="you@company.com" required/>
+        </div>
+
+        <div class="divider">Your report will be sent here</div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span id="btnText">Get My Free Audit →</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+
+        <div class="fast-delivery">
+          <span>⚡</span> Average report delivery: under 5 minutes
+        </div>
+      </form>
+
+      <div class="status" id="status"></div>
+
+      <div class="privacy">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M8 11V8C8 5.79 9.79 4 12 4C14.21 4 16 5.79 16 8V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="12" cy="16" r="1.2" fill="currentColor"/>
+        </svg>
+        Your data is private and never shared with third parties
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = 'https://hook.eu1.make.com/yw59ccfpg77ipkc3hnkup5p6ski6as1n';
+
+    const form = document.getElementById('auditForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+    const statusDiv = document.getElementById('status');
+
+    let submitting = false;
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function showStatus(type, msg) {
+      statusDiv.className = 'status ' + type;
+      statusDiv.textContent = msg;
+      statusDiv.style.display = 'block';
+    }
+
+    document.getElementById('business_type').addEventListener('change', function() {
+      this.classList.add('selected');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (submitting) return;
+
+      const business_type = document.getElementById('business_type').value;
+      const business_name = document.getElementById('business_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const website = document.getElementById('website').value.trim();
+      const biggest_problem = document.getElementById('biggest_problem').value.trim();
+
+      statusDiv.style.display = 'none';
+
+      if (!business_type || !business_name || !email) {
+        showStatus('error', '⚠️ Please fill in all required fields.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showStatus('error', '⚠️ Please enter a valid email address.');
+        return;
+      }
+
+      submitting = true;
+      submitBtn.disabled = true;
+      btnText.textContent = 'Analyzing your business...';
+      spinner.style.display = 'inline-block';
+
+      const payload = {
+        business_type,
+        business_name,
+        email,
+        website: website || '',
+        biggest_problem: biggest_problem || '',
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          mode: 'no-cors'
+        });
+
+        // ✅ Show success message - stays on same page, no broken redirect
+        showStatus('success', '✅ Audit submitted! Check your inbox in the next few minutes for your revenue leak report.');
+
+        // Reset form
+        form.reset();
+        document.getElementById('business_type').classList.remove('selected');
+
+      } catch (err) {
+        showStatus('error', '❌ Something went wrong. Please try again.');
+      } finally {
+        submitting = false;
+        submitBtn.disabled = false;
+        btnText.textContent = 'Get My Free Audit →';
+        spinner.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
