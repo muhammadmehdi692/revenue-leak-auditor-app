@@ -214,20 +214,18 @@
       btnText.textContent = 'Analyzing your business...';
       spinner.style.display = 'inline-block';
 
-      const payload = {
-        business_type: business_type,
-        business_name: business_name,
-        email: email,
-        website: website || '',
-        biggest_problem: biggest_problem || '',
-        timestamp: new Date().toISOString()
-      };
+      // ✅ Using form-data so Make.com receives fields individually (no "value" wrapper)
+      const formData = new URLSearchParams();
+      formData.append('business_type', business_type);
+      formData.append('business_name', business_name);
+      formData.append('email', email);
+      formData.append('website', website || '');
+      formData.append('biggest_problem', biggest_problem || '');
 
       try {
         const response = await fetch(WEBHOOK_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: formData
         });
 
         // ✅ Only show success if request actually succeeded
